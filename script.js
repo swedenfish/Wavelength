@@ -197,6 +197,7 @@ function createRoom() {
 }
 
 function hostStartGame() {
+  // resetUI();
   topic = hintList[Math.floor(Math.random() * hintList.length)];
   targetStart = Math.floor(Math.random() * 60);
   targetEnd = targetStart + 30;
@@ -214,6 +215,7 @@ function hostStartGame() {
   document.getElementById("right-label").innerText = topic.right;
   document.getElementById("hint-input").style.display = "block";
   drawArc(true);
+  document.getElementById("startGameBtn").style.display = "none";
 }
 
 function confirmHint() {
@@ -267,7 +269,8 @@ function submitGuess() {
     gameState: 'resultPhase',
     showTarget: true,
     showGuess: true,
-    liveGuess: null
+    liveGuess: null,
+    updatedAt: Date.now(), // ✅ 强制变化，触发监听器
   });
 }
 
@@ -281,8 +284,15 @@ function nextRound() {
     currentHint: "",
     guessResult: null,
     liveGuess: null,
-    currentTurn: currentTurn
+    currentTurn: currentTurn,
+    // target: null // <-- ✅ 强制清除
   });
+  if (currentTurn === playerRole) {
+  document.getElementById("startGameBtn").style.display = "block";
+  // hostStartGame();
+  }
+  // document.getElementById("game-step").innerText = currentTurn;
+  
 }
 
 function resetUI() {
@@ -291,6 +301,9 @@ function resetUI() {
   document.getElementById("hint").innerText = "（等待提示）";
   document.getElementById("result").innerText = "";
 
+  document.getElementById("left-label").innerText = "（等待加载）";
+  document.getElementById("right-label").innerText = "（等待加载）";
+  
   // 隐藏输入/猜测区域
   document.getElementById("hint-input").style.display = "none";
   document.getElementById("guess-section").style.display = "none";
@@ -318,7 +331,7 @@ function startListening() {
     const data = snapshot.val();
     if (!data) return;
 
-    if (data.target) {
+    if (data.gameState === 'hintPhase' && data.target) {
       targetStart = data.target.start;
       targetEnd = data.target.end;
       topic = { left: data.target.left, right: data.target.right };
@@ -352,8 +365,14 @@ function startListening() {
 
     if (data.gameState === 'resultPhase') {
       document.getElementById("result").innerText = data.guessResult.feedback;
-      document.getElementById("nextRoundBtn").style.display = "block";
+      // if (currentTurn !== playerRole) {
+        document.getElementById("nextRoundBtn").style.display = "block";
+      // }
     }
+
+    // if (data.gameState === 'waiting') {
+    //   resetUI();
+    // }
   });
 }
 
