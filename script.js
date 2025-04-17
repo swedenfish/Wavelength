@@ -193,7 +193,7 @@ function createRoom() {
   });
   document.getElementById('connection-status').textContent = '✅ 房间已创建：' + currentRoomId;
   startListening();
-  document.getElementById("startGameBtn").style.display = "block";
+  document.getElementById("game-step").innerText = "等待玩家加入...";
 }
 
 function hostStartGame() {
@@ -215,6 +215,7 @@ function hostStartGame() {
   document.getElementById("hint-input").style.display = "block";
   drawArc(true);
   document.getElementById("startGameBtn").style.display = "none";
+  document.getElementById("game-step").innerText = "请输入提示词...";
 }
 
 function confirmHint() {
@@ -258,6 +259,9 @@ function submitGuess() {
     result = `😢 没猜中！正确范围是 ${targetStart} ~ ${targetEnd}`;
   }
 
+  document.getElementById("guess-section").style.display = "none";
+  document.getElementById("game-step").innerText = "";
+      
   database.ref('rooms/' + currentRoomId).update({
     guessResult: {
       value: guess,
@@ -274,6 +278,7 @@ function submitGuess() {
 }
 
 function nextRound() {
+  resetUI();
   currentTurn = (currentTurn === 'host') ? 'guest' : 'host';
   database.ref('rooms/' + currentRoomId).update({
     gameState: 'waiting',
@@ -292,8 +297,8 @@ function resetUI() {
   document.getElementById("hint").innerText = "（等待提示）";
   document.getElementById("result").innerText = "";
 
-  document.getElementById("left-label").innerText = "（等待加载）";
-  document.getElementById("right-label").innerText = "（等待加载）";
+  // document.getElementById("left-label").innerText = "（等待加载）";
+  // document.getElementById("right-label").innerText = "（等待加载）";
   
   // 隐藏输入/猜测区域
   document.getElementById("hint-input").style.display = "none";
@@ -323,12 +328,18 @@ function startListening() {
     const data = snapshot.val();
     if (!data) return;
 
+    if (!data.target && data.guest && playerRole === 'host') {
+      document.getElementById("game-step").innerText = "玩家已加入，点击开始游戏！";
+      document.getElementById("startGameBtn").style.display = "block";
+    }
+
     if (data.gameState === 'hintPhase' && data.target) {
       targetStart = data.target.start;
       targetEnd = data.target.end;
       topic = { left: data.target.left, right: data.target.right };
       document.getElementById("left-label").innerText = topic.left;
       document.getElementById("right-label").innerText = topic.right;
+      
     }
 
     if (data.liveGuess !== undefined && data.liveGuess !== null) {
@@ -341,7 +352,8 @@ function startListening() {
         document.getElementById("hint-input").style.display = "block";
         drawArc(true);
       } else {
-        document.getElementById("hint").innerText = "🕐 等待对方输入提示词...";
+        document.getElementById("game-step").innerText = "🕐 等待对方输入提示词...";
+        // document.getElementById("hint").innerText = "🕐 等待对方输入提示词...";
         document.getElementById("guess-section").style.display = "none";
       }
     }
@@ -350,6 +362,7 @@ function startListening() {
       if (playerRole !== data.currentTurn) {
         document.getElementById("hint").innerText = data.currentHint;
         document.getElementById("guess-section").style.display = "block";
+        document.getElementById("game-step").innerText = "拖动以调整猜测区域";
       } else {
         document.getElementById("game-step").innerText = "等待对方猜测...";
       }
@@ -359,13 +372,19 @@ function startListening() {
       document.getElementById("result").innerText = data.guessResult.feedback;
       if (currentTurn !== playerRole) {
         document.getElementById("nextRoundBtn").style.display = "block";
+      } else {
+        document.getElementById("game-step").innerText = "";
       }
     }
 
     if (data.gameState === 'waiting') {
-      resetUI();
       if(data.currentTurn){
         currentTurn = data.currentTurn; // 更新当前的turn
+      }
+      if (currentTurn !== playerRole && data.target) {
+        resetUI();
+        document.getElementById("game-step").innerText = "🕐 等待对方输入提示词...";
+        // document.getElementById("game-step").style.display = "block";
       }
       if (currentTurn === playerRole && data.target) {
         hostStartGame();
