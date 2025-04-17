@@ -185,7 +185,7 @@ function drawArc(showTarget = false, showGuess = false) {
 // 🏠 房主函数
 // -------------------------
 function createRoom() {
-  currentRoomId = Date.now().toString();
+  currentRoomId = Math.floor(100 + Math.random() * 900).toString();
   playerRole = 'host';
   database.ref('rooms/' + currentRoomId).set({
     host: true,
@@ -194,6 +194,15 @@ function createRoom() {
   document.getElementById('connection-status').textContent = '✅ 房间已创建：' + currentRoomId;
   startListening();
   document.getElementById("game-step").innerText = "等待玩家加入...";
+
+  // 在房主创建房间后注册监听
+  window.addEventListener("beforeunload", function () {
+  // 只有房主有权删除房间
+  if (playerRole === "host" && currentRoomId) {
+    database.ref('rooms/' + currentRoomId).remove();
+  }
+  });
+
 }
 
 function hostStartGame() {
