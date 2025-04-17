@@ -276,7 +276,7 @@ function submitGuess() {
 
 function nextRound() {
   currentTurn = (currentTurn === 'host') ? 'guest' : 'host';
-  resetUI();
+  // resetUI();
   database.ref('rooms/' + currentRoomId).update({
     gameState: 'waiting',
     showTarget: false,
@@ -287,10 +287,10 @@ function nextRound() {
     currentTurn: currentTurn,
     // target: null // <-- ✅ 强制清除
   });
-  if (currentTurn === playerRole) {
-  document.getElementById("startGameBtn").style.display = "block";
-  // hostStartGame();
-  }
+  // if (currentTurn === playerRole) {
+  // document.getElementById("startGameBtn").style.display = "block";
+  // // hostStartGame();
+  // }
   // document.getElementById("game-step").innerText = currentTurn;
   
 }
@@ -319,6 +319,7 @@ function resetUI() {
 
   // 重绘画布（无目标、无指针）
   drawArc(false, false);
+
 }
 
 
@@ -365,14 +366,21 @@ function startListening() {
 
     if (data.gameState === 'resultPhase') {
       document.getElementById("result").innerText = data.guessResult.feedback;
-      // if (currentTurn !== playerRole) {
+      if (currentTurn !== playerRole) {
         document.getElementById("nextRoundBtn").style.display = "block";
-      // }
+      }
     }
 
-    // if (data.gameState === 'waiting') {
-    //   resetUI();
-    // }
+    if (data.gameState === 'waiting') {
+      resetUI();
+      if(data.currentTurn){
+        currentTurn = data.currentTurn; // 更新当前的turn
+      }
+      if (currentTurn === playerRole) {
+        document.getElementById("startGameBtn").style.display = "block";
+        // hostStartGame();
+      }
+    }
   });
 }
 
