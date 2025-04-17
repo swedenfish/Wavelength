@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wavelength 远程版</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div id="connection-panel">
+      <input type="text" id="roomId" placeholder="输入房间号">
+      <button onclick="createRoom()">🛋️ 创建房间</button>
+      <button onclick="joinRoom()">🔗 加入房间</button>
+      <span id="connection-status">❌ 未连接</span>
+    </div>
+
+    <h1>Wavelength 简易双人版</h1>
+
+    <div class="dimension">
+      <span id="left-label">（等待加载）</span>
+      <canvas id="arcCanvas" width="400" height="250"></canvas>
+      <span id="right-label">（等待加载）</span>
+    </div>
+
+    <p id="game-step">等待开始游戏...</p>
+
+    <!-- ✅ 房主开始游戏按钮 -->
+    <button id="startGameBtn" onclick="hostStartGame()" style="display:none;">🚀 开始游戏</button>
+
+    <!-- ✅ 输入提示词区域（当前出题方） -->
+    <div id="hint-input" style="display:none;">
+      <input type="text" id="hintBox" placeholder="输入提示词">
+      <button onclick="confirmHint()">确认提示</button>
+    </div>
+
+    <!-- ✅ 猜测区域（当前猜测方） -->
+    <div id="guess-section" style="display:none;">
+      <p>提示词：<span id="hint">（等待提示）</span></p>
+      <input type="range" id="guessSlider" min="0" max="100" value="50">
+      <button onclick="submitGuess()">提交猜测</button>
+    </div>
+
+    <p id="result"></p>
+    <!-- ✅ 下一轮按钮：开始新一轮并切换角色 -->
+    <button id="nextRoundBtn" onclick="nextRound()" style="display:none;">🔁 下一轮</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

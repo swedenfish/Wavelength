@@ -1,0 +1,36 @@
+body {
+    font-family: sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .container {
+    text-align: center;
+    background-color: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    width: 500px;
+  }
+  
+  .dimension {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  
+  canvas {
+    border: 1px solid #ccc;
+  }
+  
+  #guessSlider {
+    width: 80%;
+    margin-top: 20px;
+  }
+  
