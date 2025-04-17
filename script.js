@@ -197,7 +197,6 @@ function createRoom() {
 }
 
 function hostStartGame() {
-  // resetUI();
   topic = hintList[Math.floor(Math.random() * hintList.length)];
   targetStart = Math.floor(Math.random() * 60);
   targetEnd = targetStart + 30;
@@ -276,7 +275,6 @@ function submitGuess() {
 
 function nextRound() {
   currentTurn = (currentTurn === 'host') ? 'guest' : 'host';
-  // resetUI();
   database.ref('rooms/' + currentRoomId).update({
     gameState: 'waiting',
     showTarget: false,
@@ -285,14 +283,7 @@ function nextRound() {
     guessResult: null,
     liveGuess: null,
     currentTurn: currentTurn,
-    // target: null // <-- ✅ 强制清除
   });
-  // if (currentTurn === playerRole) {
-  // document.getElementById("startGameBtn").style.display = "block";
-  // // hostStartGame();
-  // }
-  // document.getElementById("game-step").innerText = currentTurn;
-  
 }
 
 function resetUI() {
@@ -376,9 +367,8 @@ function startListening() {
       if(data.currentTurn){
         currentTurn = data.currentTurn; // 更新当前的turn
       }
-      if (currentTurn === playerRole) {
-        document.getElementById("startGameBtn").style.display = "block";
-        // hostStartGame();
+      if (currentTurn === playerRole && data.target) {
+        hostStartGame();
       }
     }
   });
