@@ -354,7 +354,7 @@ function submitGuess(countdown = false) {
     gameState: 'resultPhase',
     showTarget: true,
     showGuess: true,
-    liveGuess: null,
+    liveGuess: guess,
     updatedAt: Date.now(), // ✅ 强制变化，触发监听器
   });
 
@@ -467,7 +467,7 @@ function startListening() {
         document.getElementById("hint-input").style.display = "block";
         drawArc(true);
         // 倒计时逻辑
-        startCountdown(data.phaseStartTime, 10);
+        startCountdown(data.phaseStartTime, 30);
       } else {
         document.getElementById("game-step").innerText = "🕐 等待对方输入提示词...";
         document.getElementById("guess-section").style.display = "none";
@@ -480,7 +480,7 @@ function startListening() {
         document.getElementById("guess-section").style.display = "block";
         document.getElementById("game-step").innerText = "拖动以调整猜测区域";
         // 倒计时逻辑
-        startCountdown(data.phaseStartTime, 10);
+        startCountdown(data.phaseStartTime, 15);
       } else {
         // document.getElementById("game-step").innerText = "等待对方猜测...  提示词为: " + data.currentHint;
       }
