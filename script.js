@@ -24,6 +24,19 @@ let topic = {};
 let guessPercent = null;
 let currentTurn = 'host'; // host 先出题
 
+const chineseWordBank = [
+  "火锅", "宇宙", "爱情", "梦境", "沙发", "冰箱", "奶奶", "猫咪", "老师", "机器人",
+  "超市", "山洞", "鬼魂", "星星", "火车", "桥", "密码", "纸张", "火焰", "草地",
+  "钢铁", "隐形人", "书包", "电脑", "帽子", "温泉", "炸鸡", "笑声", "监控器", "独角兽",
+  "医院", "海洋", "牙齿", "台风", "唱歌", "滑板", "墙壁", "日记", "镜子", "钢笔",
+  "早餐", "图书馆", "蛋糕", "瀑布", "熔岩", "战士", "夜晚", "迷宫", "面具", "钟表",
+  "电梯", "钥匙", "龙", "月亮", "舞蹈", "影子", "手电筒", "山脉", "爆米花", "龙卷风",
+  "考试", "游乐园", "奇迹", "雪人", "雨伞", "桌子", "未来", "深海", "火星", "潜水艇",
+  "光线", "时间", "沙子", "声音", "森林", "隧道", "眼镜", "帽子", "记忆", "梦游",
+  "颜色", "电池", "表情", "信号", "油画", "小丑", "幻觉", "摇滚", "铃铛", "乐器",
+  "洞穴", "剧本", "雕像", "种子", "磁铁", "香气", "速度", "谜语", "传送门", "怪兽"
+];
+
 const hintList = [
   { left: "常说的话", right: "不常说的话" },
   { left: "便宜", right: "昂贵" },
@@ -217,7 +230,8 @@ function hostStartGame() {
       left: topic.left,
       right: topic.right
     },
-    currentTurn: currentTurn
+    currentTurn: currentTurn,
+    phaseStartTime: Date.now() // 出题阶段开始时间
   });
   document.getElementById("left-label").innerText = topic.left;
   document.getElementById("right-label").innerText = topic.right;
@@ -227,13 +241,22 @@ function hostStartGame() {
   document.getElementById("game-step").innerText = "请输入提示词...";
 }
 
-function confirmHint() {
+function confirmHint(countdown = false) {
+  clearInterval(countdownInterval);
+  document.getElementById("countdown").style.display = "none";
+
+  if (countdown) {
+    const word = chineseWordBank[Math.floor(Math.random() * chineseWordBank.length)];
+    document.getElementById("hintBox").value = word;
+    alert("⏰ 时间到！你没能及时出题！系统随机生成了提示词：" + word);
+  }
   const hint = document.getElementById("hintBox").value.trim();
   if (!hint) return alert("请输入提示词！");
   database.ref('rooms/' + currentRoomId).update({
     currentHint: hint,
     gameState: 'guessPhase',
-    showTarget: false
+    showTarget: false,
+    phaseStartTime: Date.now() // 出题阶段开始时间
   });
   document.getElementById("hint-input").style.display = "none";
   document.getElementById("game-step").innerText = "等待对方猜测...";
@@ -251,7 +274,14 @@ function joinRoom() {
   startListening();
 }
 
-function submitGuess() {
+function submitGuess(countdown = false) {
+  clearInterval(countdownInterval);
+  document.getElementById("countdown").style.display = "none";
+
+  if (countdown) {
+    document.getElementById("guessSlider").value = Math.floor(Math.random() * 100);
+    alert("⏰ 时间到！你没能及时猜测！系统随机生成了猜测值：" + document.getElementById("guessSlider").value);
+  }
   const guess = parseInt(document.getElementById("guessSlider").value);
   guessPercent = guess;
 
@@ -321,9 +351,6 @@ function resetUI() {
   document.getElementById("hintBox").value = "";
   document.getElementById("hint").innerText = "（等待提示）";
   document.getElementById("result").innerText = "";
-
-  // document.getElementById("left-label").innerText = "（等待加载）";
-  // document.getElementById("right-label").innerText = "（等待加载）";
   
   // 隐藏输入/猜测区域
   document.getElementById("hint-input").style.display = "none";
@@ -343,6 +370,37 @@ function resetUI() {
 
 }
 
+// 倒计时函数
+let countdownInterval;
+
+function startCountdown(startTime, durationInSeconds) {
+  clearInterval(countdownInterval);
+  const countdownEl = document.getElementById("countdown");
+  countdownEl.style.display = "block";
+
+  countdownInterval = setInterval(() => {
+    const now = Date.now();
+    const secondsPassed = Math.floor((now - startTime) / 1000);
+    const secondsLeft = Math.max(0, durationInSeconds - secondsPassed);
+    countdownEl.textContent = `⏳ 剩余时间：${secondsLeft} 秒`;
+
+    if (secondsLeft <= 0) {
+      clearInterval(countdownInterval);
+      handleTimeout();
+    }
+  }, 500);
+}
+
+function handleTimeout() {
+  if (document.getElementById("hint-input").style.display !== "none") {
+    // alert("⏰ 时间到！你没能及时出题！");
+    confirmHint(true); // 自动提交空提示或提示框已有内容
+  } 
+  else if (document.getElementById("guess-section").style.display !== "none") {
+    // alert("⏰ 时间到！你没能及时猜测！");
+    submitGuess(true); // 自动提交当前滑动值
+  }
+}
 
 // -------------------------
 // 🔄 数据监听
@@ -376,9 +434,10 @@ function startListening() {
       if (playerRole === data.currentTurn) {
         document.getElementById("hint-input").style.display = "block";
         drawArc(true);
+        // 倒计时逻辑
+        startCountdown(data.phaseStartTime, 10);
       } else {
         document.getElementById("game-step").innerText = "🕐 等待对方输入提示词...";
-        // document.getElementById("hint").innerText = "🕐 等待对方输入提示词...";
         document.getElementById("guess-section").style.display = "none";
       }
     }
@@ -388,6 +447,8 @@ function startListening() {
         document.getElementById("hint").innerText = data.currentHint;
         document.getElementById("guess-section").style.display = "block";
         document.getElementById("game-step").innerText = "拖动以调整猜测区域";
+        // 倒计时逻辑
+        startCountdown(data.phaseStartTime, 10);
       } else {
         document.getElementById("game-step").innerText = "等待对方猜测...";
       }
@@ -409,7 +470,6 @@ function startListening() {
       if (currentTurn !== playerRole && data.target) {
         resetUI();
         document.getElementById("game-step").innerText = "🕐 等待对方输入提示词...";
-        // document.getElementById("game-step").style.display = "block";
       }
       if (currentTurn === playerRole && data.target) {
         hostStartGame();
