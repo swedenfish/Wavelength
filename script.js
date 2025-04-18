@@ -272,7 +272,7 @@ function confirmHint(countdown = false) {
   if (countdown) {
     const word = chineseWordBank[Math.floor(Math.random() * chineseWordBank.length)];
     document.getElementById("hintBox").value = word;
-    alert("⏰ 时间到！你没能及时出题！系统随机生成了提示词：" + word);
+    // alert("⏰ 时间到！你没能及时出题！系统随机生成了提示词：" + word);
   }
   const hint = document.getElementById("hintBox").value.trim();
   if (!hint) return alert("请输入提示词！");
@@ -283,7 +283,10 @@ function confirmHint(countdown = false) {
     phaseStartTime: Date.now() // 出题阶段开始时间
   });
   document.getElementById("hint-input").style.display = "none";
-  document.getElementById("game-step").innerText = "等待对方猜测...";
+  document.getElementById("game-step").innerText = "等待对方猜测...  提示词为: " + hint;
+  if (countdown) {
+    alert("⏰ 时间到！你没能及时出题！系统随机生成了提示词：" + hint);
+  }
 }
 
 // -------------------------
@@ -304,7 +307,7 @@ function submitGuess(countdown = false) {
 
   if (countdown) {
     document.getElementById("guessSlider").value = Math.floor(Math.random() * 100);
-    alert("⏰ 时间到！你没能及时猜测！系统随机生成了猜测值：" + document.getElementById("guessSlider").value);
+    // alert("⏰ 时间到！你没能及时猜测！系统随机生成了猜测值：" + document.getElementById("guessSlider").value);
   }
   const guess = parseInt(document.getElementById("guessSlider").value);
   guessPercent = guess;
@@ -354,6 +357,11 @@ function submitGuess(countdown = false) {
     liveGuess: null,
     updatedAt: Date.now(), // ✅ 强制变化，触发监听器
   });
+
+  if (countdown) {
+    // document.getElementById("guessSlider").value = Math.floor(Math.random() * 100);
+    alert("⏰ 时间到！你没能及时猜测！系统随机生成了猜测值：" + document.getElementById("guessSlider").value);
+  }
 }
 
 function nextRound() {
@@ -474,7 +482,7 @@ function startListening() {
         // 倒计时逻辑
         startCountdown(data.phaseStartTime, 10);
       } else {
-        document.getElementById("game-step").innerText = "等待对方猜测...";
+        // document.getElementById("game-step").innerText = "等待对方猜测...  提示词为: " + data.currentHint;
       }
     }
 
