@@ -24,6 +24,30 @@ let topic = {};
 let guessPercent = null;
 let currentTurn = 'host'; // host 先出题
 
+let lastGuessValue = 50;       // ✅ 初始滑条值（只写一次）
+let lastTickPlayTime = 0;      // ✅ 记录上次播放时间
+const MIN_TICK_INTERVAL = 40;  // ✅ 限制播放频率
+let moveSounds = [];           // ✅ 空数组，稍后填入音效元素
+let moveSoundIndex = 0; 
+
+// ✅ 等待 DOM 加载完再获取音效标签
+window.addEventListener("DOMContentLoaded", () => {
+  moveSounds = [
+    document.getElementById("moveSound0"),
+    document.getElementById("moveSound1"),
+    document.getElementById("moveSound2"),
+    document.getElementById("moveSound3"),
+    document.getElementById("moveSound4"),
+  ];
+});
+
+
+
+
+
+
+
+
 const chineseWordBank = [
   "火锅", "宇宙", "爱情", "梦境", "沙发", "冰箱", "奶奶", "猫咪", "老师", "机器人",
   "超市", "山洞", "鬼魂", "星星", "火车", "桥", "密码", "纸张", "火焰", "草地",
@@ -495,10 +519,30 @@ arcCanvas.addEventListener("mousedown", (e) => {
   }
 });
 
-document.getElementById("guessSlider").addEventListener("input", () => {
-  if (document.getElementById("guess-section").style.display !== "none") {
-    guessPercent = parseInt(document.getElementById("guessSlider").value);
-    drawArc(false, true);
-    database.ref('rooms/' + currentRoomId).update({ liveGuess: guessPercent });
-  }
-});
+  // 👈 放在文件顶部或合适作用域外部
+
+  document.getElementById("guessSlider").addEventListener("input", () => {
+    const slider = document.getElementById("guessSlider");
+    const newValue = parseInt(slider.value);
+  
+    const now = Date.now();
+    const diff = Math.abs(newValue - lastGuessValue);
+  
+    if (diff > 0 && now - lastTickPlayTime > MIN_TICK_INTERVAL) {
+      // ✅ 播放一次 tick 声音（用音效池）
+      const sound = moveSounds[moveSoundIndex];
+      sound.currentTime = 0;
+      sound.play();
+      moveSoundIndex = (moveSoundIndex + 1) % moveSounds.length;
+      lastTickPlayTime = now; // ✅ 更新上次播放时间
+    }
+  
+    lastGuessValue = newValue;
+  
+    if (document.getElementById("guess-section").style.display !== "none") {
+      guessPercent = newValue;
+      drawArc(false, true);
+      database.ref('rooms/' + currentRoomId).update({ liveGuess: guessPercent });
+    }
+  });
+  
