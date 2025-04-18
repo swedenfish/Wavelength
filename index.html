@@ -4,9 +4,13 @@
   <meta charset="UTF-8">
   <title>Wavelength 远程版</title>
   <link rel="stylesheet" href="style.css">
+
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <!-- ✅ 礼炮特效库 -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
   <div class="container">
@@ -44,10 +48,15 @@
     </div>
 
     <p id="result"></p>
+
     <!-- ✅ 下一轮按钮：开始新一轮并切换角色 -->
     <button id="nextRoundBtn" onclick="nextRound()" style="display:none;">🔁 下一轮</button>
   </div>
 
+  <!-- ✅ 🎊 庆祝音效 -->
+  <audio id="celebrateSound" src="partypop.mp3" preload="auto"></audio>
+
+  <!-- ✅ 游戏逻辑脚本 -->
   <script src="script.js"></script>
 </body>
 </html>

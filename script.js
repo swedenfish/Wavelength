@@ -262,6 +262,22 @@ function submitGuess() {
   let result = "";
   if (guess >= perfectStart && guess <= perfectEnd) {
     result = "💯 完美命中！太神啦！";
+
+    // 🎉 视觉礼炮特效
+    confetti({
+      particleCount: 100,
+      spread: 80,
+      origin: { y: 0.6 }
+    });
+
+// 🔊 播放音效
+    const celebrateSound = document.getElementById("celebrateSound");
+    celebrateSound.currentTime = 0;
+    celebrateSound.play();
+
+
+
+
   } else if (guess >= targetStart && guess <= targetEnd) {
     result = "✅ 猜中了范围！不错！";
   } else {
