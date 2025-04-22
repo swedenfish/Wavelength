@@ -9,18 +9,23 @@ body {
   min-height: 100vh;
 }
 
-/* 主内容区域往上靠，不要占满整个高度 */
+/* 主内容区域往上靠，减少顶部留白 */
 .container {
   text-align: center;
   background-color: white;
-  padding: 30px;
+  padding: 20px 30px 40px 30px;
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   width: 500px;
-  margin-top: 180px; /* ✅ 往下挪一点 */
+  margin-top: 180px; /* ✅ 往上移 */
   margin-bottom: 20px;
 }
 
+/* 让房间输入面板更靠近标题 */
+#connection-panel {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
 
 .dimension {
   display: flex;
@@ -51,4 +56,44 @@ canvas {
   color: #333;
   margin-bottom: 30px;
   max-width: 90%;
+}
+
+#title {
+  font-size: 48px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin-top: 0;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+#title span {
+  font-family: 'Arial Black', sans-serif;
+  font-size: 48px;
+  font-weight: bold;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+#title span:hover {
+  transform: translateY(-4px);
+}
+
+/* 随机错开橘色调 */
+#title span:nth-child(1) { color: #ffb300; }
+#title span:nth-child(2) { color: #ff6f00; }
+#title span:nth-child(3) { color: #ffa000; }
+#title span:nth-child(4) { color: #ffd54f; }
+#title span:nth-child(5) { color: #ff8f00; }
+#title span:nth-child(6) { color: #ffca28; }
+#title span:nth-child(7) { color: #ffc107; }
+#title span:nth-child(8) { color: #ffe082; }
+#title span:nth-child(9) { color: #ffcc80; }
+#title span:nth-child(10) { color: #fff3e0; }
+
+@keyframes waveColor {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-5px); }
 }
