@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Wavelength 远程版</title>
@@ -14,39 +15,47 @@
 </head>
 
 
-  
-
-
-
-
-
-
-
-
-
-
-
 <body>
   <div class="container">
-    <h1 id="title">
-      <span>W</span><span>A</span><span>V</span><span>E</span><span>L</span><span>E</span><span>N</span><span>G</span><span>T</span><span>H</span>
-    
-      
-    </h1>
-    
-    <div id="connection-panel">
-      <input type="text" id="roomId" placeholder="输入房间号">
-      <button onclick="createRoom()">🛋️ 创建房间</button>
-      <button onclick="joinRoom()">🔗 加入房间</button>
-      <span id="connection-status">❌ 未连接</span>
+    <div id="title">
+      <svg width="500" height="200" viewBox="0 -10 500 200">
+        <path id="arcPath" d="M50,140 A400,400 0 0,1 450,140" fill="none" />
+        <text>
+          <textPath href="#arcPath" startOffset="50%" text-anchor="middle">
+            <tspan>W</tspan>
+            <tspan>A</tspan>
+            <tspan>V</tspan>
+            <tspan>E</tspan>
+            <tspan>L</tspan>
+            <tspan>E</tspan>
+            <tspan>N</tspan>
+            <tspan>G</tspan>
+            <tspan>T</tspan>
+            <tspan>H</tspan>
+          </textPath>
+        </text>
+      </svg>
     </div>
 
-    
+    <div id="control-panel">
+      <button id="create" class="button-9" role="button" onclick="createRoom()">🛋️ 创建房间</button>
+      <div id="connection-area">
+        <div id="input-row">
+          <input id="input-id" type="text" placeholder="输入房间号">
+          <button id="join" class="button-9" role="button" onclick="joinRoom()">🔗 加入</button>
+        </div>
+        <div id="status-row">
+          <span id="connection-status">❌ 未连接</span>
+        </div>
+      </div>
+    </div>
+
+
 
     <div class="dimension">
-      <span id="left-label">（等待加载）</span>
+      <span id="label"><img src="assets/loading.gif" alt="加载中"></span>
       <canvas id="arcCanvas" width="400" height="250"></canvas>
-      <span id="right-label">（等待加载）</span>
+      <span id="label"><img src="assets/loading.gif" alt="加载中"></span>
     </div>
 
     <p id="game-step">等待开始游戏...</p>
@@ -77,30 +86,24 @@
   </div>
 
   <!-- ✅ 🎊 庆祝音效 -->
-  <audio id="celebrateSound" src="partypop.mp3" preload="auto"></audio>
+  <audio id="celebrateSound" src="assets/partypop.mp3" preload="auto"></audio>
 
   <!-- ✅ 游戏逻辑脚本 -->
   <script src="script.js"></script>
 </body>
-  <div style="text-align: center;">
-    <div id="rules">
-      <h3>游戏规则</h3>
-      <p>1. 房主点击“创建房间”，分享房间号。</p>
-      <p>2. 出题方输入提示词，猜测方拖动滑条猜位置。</p>
-      <p>3. 尝试理解彼此的思路，挑战默契极限！🔥</p>
-    </div>
+<div style="text-align: center;">
+  <div id="rules">
+    <h3 id="rules-title">游戏规则</h3>
+    <p>1. 房主点击“创建房间”，分享房间号。</p>
+    <p>2. 出题方输入提示词，猜测方拖动滑条猜位置。</p>
+    <p>3. 尝试理解彼此的思路，挑战默契极限！🔥</p>
   </div>
-
-
-
-
-
+</div>
 
 </html>
 
-
-<audio id="moveSound0" src="tick.mp3" preload="auto"></audio>
-<audio id="moveSound1" src="tick.mp3" preload="auto"></audio>
-<audio id="moveSound2" src="tick.mp3" preload="auto"></audio>
-<audio id="moveSound3" src="tick.mp3" preload="auto"></audio>
-<audio id="moveSound4" src="tick.mp3" preload="auto"></audio>
+<audio id="moveSound0" src="assets/tick.mp3" preload="auto"></audio>
+<audio id="moveSound1" src="assets/tick.mp3" preload="auto"></audio>
+<audio id="moveSound2" src="assets/tick.mp3" preload="auto"></audio>
+<audio id="moveSound3" src="assets/tick.mp3" preload="auto"></audio>
+<audio id="moveSound4" src="assets/tick.mp3" preload="auto"></audio>
