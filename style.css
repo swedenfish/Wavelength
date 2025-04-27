@@ -104,12 +104,13 @@ canvas {
 	border: 1px solid #ccc;
 }
 
-#label {
+#left-label,
+#right-label {
 	margin-left: 8px;
 	margin-right: 8px;
 }
 
-#label img {
+.dimension img {
 	width: 24px; /* 调整为适合您布局的大小 */
 	height: auto;
 	vertical-align: middle;
