@@ -377,7 +377,7 @@ function nextRound() {
   resetUI();
   currentTurn = (currentTurn === 'host') ? 'guest' : 'host';
   database.ref('rooms/' + currentRoomId).update({
-    gameState: 'waiting',
+    gameState: 'hintPhase',
     showTarget: false,
     showGuess: false,
     currentHint: "",
@@ -524,13 +524,22 @@ function startListening() {
       if (data.currentTurn) {
         currentTurn = data.currentTurn;
       }
-      if (currentTurn !== playerRole && data.target) {
-        resetUI();
-        const gameStep = document.getElementById("game-step");
+    
+      resetUI();  // 不管是谁都先清理界面
+    
+      const gameStep = document.getElementById("game-step");
+      const startGameBtn = document.getElementById("startGameBtn");
+    
+      if (currentTurn === playerRole) {
+        // 轮到自己出题
+        if (gameStep) gameStep.innerText = "点击开始新一轮出题！";
+        if (startGameBtn) startGameBtn.style.display = "block";
+      } else {
+        // 等待对方出题
         if (gameStep) gameStep.innerText = "🕐 等待对方输入提示词...";
       }
-      
     }
+    
   });
 }
 
