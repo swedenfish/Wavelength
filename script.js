@@ -376,16 +376,23 @@ function submitGuess(countdown = false) {
 function nextRound() {
   resetUI();
   currentTurn = (currentTurn === 'host') ? 'guest' : 'host';
+
   database.ref('rooms/' + currentRoomId).update({
-    gameState: 'hintPhase',
+    gameState: 'waiting',
     showTarget: false,
     showGuess: false,
     currentHint: "",
     guessResult: null,
     liveGuess: null,
     currentTurn: currentTurn,
+  }).then(() => {
+    // ✅ 更新完 Firebase 后，判断是不是自己出题
+    if (currentTurn === playerRole) {
+      hostStartGame();
+    }
   });
 }
+
 
 function resetUI() {
   // 清除提示词和结果
@@ -524,21 +531,14 @@ function startListening() {
       if (data.currentTurn) {
         currentTurn = data.currentTurn;
       }
-    
-      resetUI();  // 不管是谁都先清理界面
-    
-      const gameStep = document.getElementById("game-step");
-      const startGameBtn = document.getElementById("startGameBtn");
-    
-      if (currentTurn === playerRole) {
-        // 轮到自己出题
-        if (gameStep) gameStep.innerText = "点击开始新一轮出题！";
-        if (startGameBtn) startGameBtn.style.display = "block";
-      } else {
-        // 等待对方出题
+      if (currentTurn !== playerRole && data.target) {
+        resetUI();
+        const gameStep = document.getElementById("game-step");
         if (gameStep) gameStep.innerText = "🕐 等待对方输入提示词...";
       }
     }
+    
+    
     
   });
 }
@@ -561,7 +561,7 @@ arcCanvas.addEventListener("mousedown", (e) => {
   }
 });
 
-  // 👈 放在文件顶部或合适作用域外部
+  
 
   document.getElementById("guessSlider").addEventListener("input", () => {
     const slider = document.getElementById("guessSlider");
