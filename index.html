@@ -41,7 +41,7 @@
       <button id="create" class="button-9" role="button" onclick="createRoom()">🛋️ 创建房间</button>
       <div id="connection-area">
         <div id="input-row">
-          <input id="input-id" type="text" placeholder="输入房间号">
+          <input id="roomId" type="text" placeholder="输入房间号">
           <button id="join" class="button-9" role="button" onclick="joinRoom()">🔗 加入</button>
         </div>
         <div id="status-row">
@@ -53,10 +53,12 @@
 
 
     <div class="dimension">
-      <span id="label"><img src="assets/loading.gif" alt="加载中"></span>
+      <span id="left-label"><img src="assets/loading.gif" alt="加载中"></span>
       <canvas id="arcCanvas" width="400" height="250"></canvas>
-      <span id="label"><img src="assets/loading.gif" alt="加载中"></span>
+      <span id="right-label"><img src="assets/loading.gif" alt="加载中"></span>
     </div>
+    
+    
 
     <p id="game-step">等待开始游戏...</p>
 

@@ -246,6 +246,7 @@ function hostStartGame() {
   topic = hintList[Math.floor(Math.random() * hintList.length)];
   targetStart = Math.floor(Math.random() * 60);
   targetEnd = targetStart + 30;
+
   database.ref('rooms/' + currentRoomId).update({
     gameState: 'hintPhase',
     target: {
@@ -255,15 +256,23 @@ function hostStartGame() {
       right: topic.right
     },
     currentTurn: currentTurn,
-    phaseStartTime: Date.now() // 出题阶段开始时间
+    phaseStartTime: Date.now()
   });
-  document.getElementById("left-label").innerText = topic.left;
-  document.getElementById("right-label").innerText = topic.right;
-  document.getElementById("hint-input").style.display = "block";
+
+  const leftLabel = document.getElementById("left-label");
+  const rightLabel = document.getElementById("right-label");
+  const hintInput = document.getElementById("hint-input");
+  const startGameBtn = document.getElementById("startGameBtn");
+  const gameStep = document.getElementById("game-step");
+
+  if (leftLabel) leftLabel.innerText = topic.left;
+  if (rightLabel) rightLabel.innerText = topic.right;
+  if (hintInput) hintInput.style.display = "block";
   drawArc(true);
-  document.getElementById("startGameBtn").style.display = "none";
-  document.getElementById("game-step").innerText = "请输入提示词...";
+  if (startGameBtn) startGameBtn.style.display = "none";
+  if (gameStep) gameStep.innerText = "请输入提示词...";
 }
+
 
 function confirmHint(countdown = false) {
   clearInterval(countdownInterval);
@@ -293,7 +302,7 @@ function confirmHint(countdown = false) {
 // 👤 玩家函数
 // -------------------------
 function joinRoom() {
-  currentRoomId = document.getElementById('roomId').value.trim();
+  currentRoomId = document.getElementById('input-id').value.trim();
   if (!currentRoomId) return alert('请输入房间号');
   playerRole = 'guest';
   database.ref('rooms/' + currentRoomId).update({ guest: true });
@@ -444,71 +453,87 @@ function startListening() {
     if (!data) return;
 
     if (!data.target && data.guest && playerRole === 'host') {
-      document.getElementById("game-step").innerText = "玩家已加入，点击开始游戏！";
-      document.getElementById("startGameBtn").style.display = "block";
+      const gameStep = document.getElementById("game-step");
+      const startGameBtn = document.getElementById("startGameBtn");
+      if (gameStep) gameStep.innerText = "玩家已加入，点击开始游戏！";
+      if (startGameBtn) startGameBtn.style.display = "block";
     }
 
     if (data.gameState === 'hintPhase' && data.target) {
       targetStart = data.target.start;
       targetEnd = data.target.end;
       topic = { left: data.target.left, right: data.target.right };
-      document.getElementById("left-label").innerText = topic.left;
-      document.getElementById("right-label").innerText = topic.right;
-      
+
+      const leftLabel = document.getElementById("left-label");
+      const rightLabel = document.getElementById("right-label");
+      if (leftLabel) leftLabel.innerText = topic.left;
+      if (rightLabel) rightLabel.innerText = topic.right;
     }
 
     if (data.liveGuess !== undefined && data.liveGuess !== null) {
       guessPercent = data.liveGuess;
     }
+
     drawArc(data.showTarget, data.showGuess || data.liveGuess !== undefined);
 
     if (data.gameState === 'hintPhase') {
       if (playerRole === data.currentTurn) {
-        document.getElementById("hint-input").style.display = "block";
+        const hintInput = document.getElementById("hint-input");
+        if (hintInput) hintInput.style.display = "block";
+
         drawArc(true);
-        // 倒计时逻辑
         startCountdown(data.phaseStartTime, 30);
       } else {
-        document.getElementById("game-step").innerText = "🕐 等待对方输入提示词...";
-        document.getElementById("guess-section").style.display = "none";
+        const gameStep = document.getElementById("game-step");
+        const guessSection = document.getElementById("guess-section");
+        if (gameStep) gameStep.innerText = "🕐 等待对方输入提示词...";
+        if (guessSection) guessSection.style.display = "none";
       }
     }
 
     if (data.gameState === 'guessPhase') {
       if (playerRole !== data.currentTurn) {
-        document.getElementById("hint").innerText = data.currentHint;
-        document.getElementById("guess-section").style.display = "block";
-        document.getElementById("game-step").innerText = "拖动以调整猜测区域";
-        // 倒计时逻辑
+        const hintElem = document.getElementById("hint");
+        const guessSection = document.getElementById("guess-section");
+        const gameStep = document.getElementById("game-step");
+
+        if (hintElem) hintElem.innerText = data.currentHint;
+        if (guessSection) guessSection.style.display = "block";
+        if (gameStep) gameStep.innerText = "拖动以调整猜测区域";
+
         startCountdown(data.phaseStartTime, 15);
       } else {
-        // document.getElementById("game-step").innerText = "等待对方猜测...  提示词为: " + data.currentHint;
+        // 当前玩家等待对方猜测，无需处理
       }
     }
 
     if (data.gameState === 'resultPhase') {
-      document.getElementById("result").innerText = data.guessResult.feedback;
+      const resultElem = document.getElementById("result");
+      const nextRoundBtn = document.getElementById("nextRoundBtn");
+      const gameStep = document.getElementById("game-step");
+
+      if (resultElem) resultElem.innerText = data.guessResult.feedback;
       if (currentTurn !== playerRole) {
-        document.getElementById("nextRoundBtn").style.display = "block";
+        if (nextRoundBtn) nextRoundBtn.style.display = "block";
       } else {
-        document.getElementById("game-step").innerText = "";
+        if (gameStep) gameStep.innerText = "";
       }
     }
 
     if (data.gameState === 'waiting') {
-      if(data.currentTurn){
-        currentTurn = data.currentTurn; // 更新当前的turn
+      if (data.currentTurn) {
+        currentTurn = data.currentTurn;
       }
       if (currentTurn !== playerRole && data.target) {
         resetUI();
-        document.getElementById("game-step").innerText = "🕐 等待对方输入提示词...";
+        const gameStep = document.getElementById("game-step");
+        if (gameStep) gameStep.innerText = "🕐 等待对方输入提示词...";
       }
-      if (currentTurn === playerRole && data.target) {
-        hostStartGame();
-      }
+      
     }
   });
 }
+
 
 // -------------------------
 // 🎯 弧线点击设置猜测 & 实时同步
