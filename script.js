@@ -302,7 +302,7 @@ function confirmHint(countdown = false) {
 // 👤 玩家函数
 // -------------------------
 function joinRoom() {
-  currentRoomId = document.getElementById('input-id').value.trim();
+  currentRoomId = document.getElementById('roomId').value.trim();
   if (!currentRoomId) return alert('请输入房间号');
   playerRole = 'guest';
   database.ref('rooms/' + currentRoomId).update({ guest: true });
