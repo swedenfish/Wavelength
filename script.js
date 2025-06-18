@@ -4,6 +4,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyC2FBVzS2LP-cX_lpMrBX_3xSikz9u-YYI",
   authDomain: "wavelength-58ccd.firebaseapp.com",
+  databaseURL: "https://wavelength-58ccd-default-rtdb.firebaseio.com",
   projectId: "wavelength-58ccd",
   storageBucket: "wavelength-58ccd.firebasestorage.app",
   messagingSenderId: "942333085121",
