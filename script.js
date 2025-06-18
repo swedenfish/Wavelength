@@ -8,8 +8,9 @@ const firebaseConfig = {
   projectId: "wavelength-58ccd",
   storageBucket: "wavelength-58ccd.firebasestorage.app",
   messagingSenderId: "942333085121",
-  appId: "1:942333085121:web:e49b7d9e2a907d07941b40"
+  appId: "1:942333085121:web:2d21b3c00a14f5b5941b40"
 };
+
 
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
