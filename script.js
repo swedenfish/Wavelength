@@ -29,7 +29,11 @@ let lastGuessValue = 50;       // ✅ 初始滑条值（只写一次）
 let lastTickPlayTime = 0;      // ✅ 记录上次播放时间
 const MIN_TICK_INTERVAL = 40;  // ✅ 限制播放频率
 let moveSounds = [];           // ✅ 空数组，稍后填入音效元素
-let moveSoundIndex = 0; 
+let moveSoundIndex = 0;
+
+// ⏰ 时间设置变量
+let hintTimeLimit = 30;        // 出题时间限制（秒）
+let guessTimeLimit = 15;       // 猜测时间限制（秒） 
 
 // ✅ 等待 DOM 加载完再获取音效标签
 window.addEventListener("DOMContentLoaded", () => {
@@ -41,6 +45,19 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("moveSound4"),
   ];
 });
+
+// ⏰ 更新时间显示和配置
+function updateTimeDisplay(type) {
+  if (type === 'hint') {
+    const value = document.getElementById("hintTime").value;
+    hintTimeLimit = parseInt(value);
+    document.getElementById("hintTimeDisplay").textContent = value + "秒";
+  } else if (type === 'guess') {
+    const value = document.getElementById("guessTime").value;
+    guessTimeLimit = parseInt(value);
+    document.getElementById("guessTimeDisplay").textContent = value + "秒";
+  }
+}
 
 
 
@@ -496,7 +513,7 @@ function startListening() {
         if (hintInput) hintInput.style.display = "block";
 
         drawArc(true);
-        startCountdown(data.phaseStartTime, 30);
+        startCountdown(data.phaseStartTime, hintTimeLimit);
       } else {
         const gameStep = document.getElementById("game-step");
         const guessSection = document.getElementById("guess-section");
@@ -515,7 +532,7 @@ function startListening() {
         if (guessSection) guessSection.style.display = "block";
         if (gameStep) gameStep.innerText = "拖动以调整猜测区域";
 
-        startCountdown(data.phaseStartTime, 15);
+        startCountdown(data.phaseStartTime, guessTimeLimit);
       } else {
         // 当前玩家等待对方猜测，无需处理
       }
